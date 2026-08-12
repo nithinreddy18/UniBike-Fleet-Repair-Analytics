@@ -1,9 +1,8 @@
 import gradio as gr
-from pydantic import BaseModel, constr, ValidationError
+from pydantic import BaseModel, ValidationError
 from src.database.session import SessionLocal
 from src.database.models import Bike, WorkOrder
 from src.core.logger import logger
-import urllib.parse
 
 # Pydantic model for validation
 class TicketPayload(BaseModel):
@@ -19,7 +18,7 @@ def submit_ticket(bike_id_str, issue_type, description):
             issue_type=issue_type,
             description=description
         )
-    except ValidationError as e:
+    except ValidationError:
         gr.Warning("Validation Error: Please ensure all fields are correctly filled.")
         return
     except ValueError:
@@ -66,7 +65,7 @@ def submit_ticket(bike_id_str, issue_type, description):
         gr.Info(f"Success! Ticket submitted for Bike {payload.bike_id}. Status updated to 'Out of Order'.")
         return
 
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         db.rollback()
         logger.error(f"Error submitting ticket: {e}")
         gr.Error("An error occurred while submitting the ticket.")

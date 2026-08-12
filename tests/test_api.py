@@ -1,4 +1,3 @@
-import pytest
 
 def test_rag_assistant_mock(monkeypatch):
     from src.ui.tabs.assistant import respond

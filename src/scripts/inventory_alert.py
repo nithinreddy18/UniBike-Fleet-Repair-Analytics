@@ -25,7 +25,7 @@ def check_inventory():
         else:
             logger.info("All inventory levels are sufficient.")
             
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         logger.error(f"Error checking inventory: {e}")
     finally:
         db.close()

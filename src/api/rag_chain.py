@@ -1,6 +1,5 @@
 import time
 from langchain_core.prompts import PromptTemplate
-from langchain_core.prompts import PromptTemplate
 from langchain_groq import ChatGroq
 from src.core.config import settings
 from langchain.chains import create_retrieval_chain
@@ -54,7 +53,7 @@ def query_assistant(question: str) -> tuple[str, list]:
         response = chain.invoke({"input": question})
         answer = response.get("answer", "I could not find an answer.")
         docs = response.get("context", [])
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         logger.error(f"RAG Chain error: {e}")
         answer = "Sorry, I encountered an error while processing your request."
         docs = []

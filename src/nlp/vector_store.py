@@ -1,8 +1,6 @@
 import os
-from typing import List
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
-from langchain_core.documents import Document
 from src.core.config import settings
 from src.core.logger import logger
 from src.nlp.loader import load_manuals

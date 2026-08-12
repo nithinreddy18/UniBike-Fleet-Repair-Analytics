@@ -2,8 +2,6 @@ import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from src.database.models import Base
-from src.database.session import get_db
-import os
 
 # Use SQLite in-memory database for testing
 SQLALCHEMY_DATABASE_URL = "sqlite:///:memory:"

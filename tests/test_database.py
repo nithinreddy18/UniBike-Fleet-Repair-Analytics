@@ -1,6 +1,5 @@
 import pytest
 from src.database.models import Bike, WorkOrder, Inventory
-from src.database.session import SessionLocal
 
 # To make UI functions use test DB, we patch SessionLocal
 @pytest.fixture(autouse=True)

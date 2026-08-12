@@ -2,7 +2,7 @@ import random
 from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
 from src.database.models import Bike, WorkOrder, Inventory
-from src.database.session import engine, SessionLocal
+from src.database.session import SessionLocal
 from src.core.logger import logger
 
 def seed_db():

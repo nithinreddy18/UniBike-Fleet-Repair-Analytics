@@ -21,7 +21,7 @@ def load_manuals() -> List[Document]:
                 docs = loader.load()
                 documents.extend(docs)
                 logger.info(f"Loaded {len(docs)} pages from {filename}")
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001
                 logger.error(f"Failed to load {filename}: {e}")
 
     return documents

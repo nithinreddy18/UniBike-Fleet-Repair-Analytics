@@ -29,7 +29,7 @@ def create_assistant_tab():
                 scale=4,
                 elem_id="chat-input"
             )
-            clear = gr.ClearButton([msg, chatbot], scale=1)
+            gr.ClearButton([msg, chatbot], scale=1)
             
         msg.submit(respond, [msg, chatbot], [msg, chatbot])
         

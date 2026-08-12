@@ -61,7 +61,7 @@ def get_kpi_data():
         """
         
         return report, fig_status, fig_inv, inventory_df[['part_name', 'quantity', 'threshold']]
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         return f"Error loading KPI data: {e}", go.Figure(), go.Figure(), pd.DataFrame()
     finally:
         db.close()

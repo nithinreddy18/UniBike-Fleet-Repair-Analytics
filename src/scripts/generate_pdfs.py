@@ -3,10 +3,9 @@ import sys
 import os
 
 try:
-    import fpdf
+    import fpdf  # noqa: F401
 except ImportError:
     subprocess.check_call([sys.executable, "-m", "pip", "install", "fpdf2"])
-    import fpdf
 
 from fpdf import FPDF
 

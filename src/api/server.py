@@ -7,7 +7,7 @@ from src.database.models import Bike, WorkOrder, Inventory
 from src.api.rag_chain import query_assistant
 from src.core.config import settings
 import pandas as pd
-from typing import List, Optional
+from typing import Optional
 
 app = FastAPI(title="UniBike API")
 
@@ -109,7 +109,7 @@ def chat(payload: ChatMessage):
         answer, docs = query_assistant(payload.message)
         sources = [doc.page_content for doc in docs]
         return {"answer": answer, "sources": sources}
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         raise HTTPException(status_code=500, detail=str(e))
 
 # --- KPI API ---
