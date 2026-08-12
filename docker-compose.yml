@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "7860:7860"
+    environment:
+      - POSTGRES_USER=unibike
+      - POSTGRES_PASSWORD=unibike_password
+      - POSTGRES_DB=unibike_db
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+      - GRADIO_ADMIN_USERNAME=admin
+      - GRADIO_ADMIN_PASSWORD=password
+      - CHROMA_DB_DIR=/app/data/chroma
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - .:/app
+      - chroma_data:/app/data/chroma
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_USER=unibike
+      - POSTGRES_PASSWORD=unibike_password
+      - POSTGRES_DB=unibike_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U unibike -d unibike_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:
+  chroma_data:

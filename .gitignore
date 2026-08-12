@@ -1,0 +1,27 @@
+# Environment variables (Contains API Keys)
+.env
+.env.*
+
+# Python
+venv/
+env/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Databases & Vector Stores
+data/unibike.db
+data/chroma/
+*.sqlite3
+*.db
+
+# Node
+frontend/node_modules/
+frontend/dist/
+frontend/.npm/
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+.DS_Store
