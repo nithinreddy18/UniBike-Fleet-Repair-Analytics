@@ -6,8 +6,6 @@ from src.database.models import Bike, WorkOrder, Inventory
 @pytest.fixture(autouse=True)
 def patch_session(monkeypatch, db_session):
     monkeypatch.setattr("src.database.session.SessionLocal", lambda: db_session)
-    monkeypatch.setattr("src.ui.tabs.ticketing.SessionLocal", lambda: db_session)
-    monkeypatch.setattr("src.ui.tabs.kpi.SessionLocal", lambda: db_session)
     monkeypatch.setattr("src.scripts.inventory_alert.SessionLocal", lambda: db_session)
 
 
