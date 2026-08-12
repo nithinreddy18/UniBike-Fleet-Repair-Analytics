@@ -50,8 +50,11 @@ Answer:"""
 
 def query_assistant(question: str) -> tuple[str, list]:
     if not settings.groq_api_key:
-        return "I am currently offline. Please configure the GROQ_API_KEY on the server.", []
-        
+        return (
+            "I am currently offline. Please configure the GROQ_API_KEY on the server.",
+            [],
+        )
+
     chain = get_rag_chain()
     start_time = time.time()
 

@@ -35,6 +35,7 @@ def get_db():
     finally:
         db.close()
 
+
 @app.on_event("startup")
 def on_startup():
     # Run initialization in a background thread to prevent blocking Uvicorn startup
@@ -45,7 +46,7 @@ def on_startup():
         generate_manual_1()
         generate_manual_2()
         get_vector_store()
-        
+
     threading.Thread(target=init_data).start()
 
 
