@@ -8,6 +8,13 @@ from src.api.rag_chain import query_assistant
 from src.core.config import settings
 import pandas as pd
 from typing import Optional
+import os
+import threading
+from src.database.session import engine
+from src.database.models import Base
+from src.database.seeder import seed_db
+from src.scripts.generate_pdfs import generate_manual_1, generate_manual_2
+from src.nlp.vector_store import get_vector_store
 
 app = FastAPI(title="UniBike API")
 
@@ -27,6 +34,19 @@ def get_db():
         yield db
     finally:
         db.close()
+
+@app.on_event("startup")
+def on_startup():
+    # Run initialization in a background thread to prevent blocking Uvicorn startup
+    def init_data():
+        os.makedirs(settings.data_dir, exist_ok=True)
+        Base.metadata.create_all(bind=engine)
+        seed_db()
+        generate_manual_1()
+        generate_manual_2()
+        get_vector_store()
+        
+    threading.Thread(target=init_data).start()
 
 
 # --- Ticketing API ---

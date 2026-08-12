@@ -22,6 +22,7 @@ def get_rag_chain():
     # If API key is missing, this will fail. Instructing the user to set it.
     if not settings.groq_api_key:
         logger.warning("GROQ_API_KEY is missing! The chatbot will fail to answer.")
+        return None
 
     llm = ChatGroq(
         temperature=0,
@@ -48,6 +49,9 @@ Answer:"""
 
 
 def query_assistant(question: str) -> tuple[str, list]:
+    if not settings.groq_api_key:
+        return "I am currently offline. Please configure the GROQ_API_KEY on the server.", []
+        
     chain = get_rag_chain()
     start_time = time.time()
 
