@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { ChatAssistant } from './AdminDashboard';
 
 export default function RepairAssistantPage() {

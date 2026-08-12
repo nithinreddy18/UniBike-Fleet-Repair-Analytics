@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import { fetchKpi, chatAssistant } from '../api';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { LayoutDashboard, MessageSquare, AlertTriangle, CheckCircle, Package, Send, Loader2, Ticket } from 'lucide-react';
 import { fetchTickets, updateTicketStatus } from '../api';
 
