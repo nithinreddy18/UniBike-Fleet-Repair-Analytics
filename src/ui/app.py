@@ -4,6 +4,7 @@ from src.ui.tabs.assistant import create_assistant_tab
 from src.ui.tabs.kpi import create_kpi_tab
 from src.core.config import settings
 
+
 def main():
     custom_css = """
     /* Mobile-first touch targets */
@@ -39,40 +40,51 @@ def main():
     theme = gr.themes.Monochrome(
         primary_hue="red",
         secondary_hue="neutral",
-        font=[gr.themes.GoogleFont("Inter"), "ui-sans-serif", "system-ui", "sans-serif"],
+        font=[
+            gr.themes.GoogleFont("Inter"),
+            "ui-sans-serif",
+            "system-ui",
+            "sans-serif",
+        ],
         radius_size=gr.themes.sizes.radius_none,
     )
-    
+
     with gr.Blocks(theme=theme, css=custom_css, title="UniBike Analytics") as demo:
         gr.Markdown("# 🚲 UniBike Fleet & Repair Analytics")
-        
+
         with gr.Tabs():
             with gr.TabItem("🎫 QR Ticketing"):
                 ticketing_tab, bike_id_input = create_ticketing_tab()
-                
+
             with gr.TabItem("🤖 DIY Assistant"):
                 create_assistant_tab()
-                
+
             with gr.TabItem("📈 KPI Dashboard (Admin)"):
                 create_kpi_tab()
 
         # Inject JS to extract ?bike_id= from URL on load
         demo.load(
-            None, 
-            inputs=[], 
-            outputs=[bike_id_input], 
-            js="() => { const params = new URLSearchParams(window.location.search); return params.get('bike_id') || ''; }"
+            None,
+            inputs=[],
+            outputs=[bike_id_input],
+            js="() => { const params = new URLSearchParams(window.location.search); return params.get('bike_id') || ''; }",
         )
 
-    # The requirements mention securing the admin tab using auth. 
+    # The requirements mention securing the admin tab using auth.
     # Since Gradio's built-in auth applies to the entire app, we launch the entire app with auth.
     # For a real public deployment, FastAPI sub-mounting would be used.
     demo.launch(
         server_name="0.0.0.0",
         server_port=7860,
-        auth=[(settings.gradio_admin_username, settings.gradio_admin_password.get_secret_value())],
-        share=False
+        auth=[
+            (
+                settings.gradio_admin_username,
+                settings.gradio_admin_password.get_secret_value(),
+            )
+        ],
+        share=False,
     )
+
 
 if __name__ == "__main__":
     main()

@@ -5,10 +5,11 @@ from langchain_core.documents import Document
 from src.core.config import settings
 from src.core.logger import logger
 
+
 def load_manuals() -> List[Document]:
     documents = []
     data_dir = settings.data_dir
-    
+
     if not os.path.exists(data_dir):
         logger.warning(f"Data directory {data_dir} does not exist.")
         return documents

@@ -9,11 +9,12 @@ except ImportError:
 
 from fpdf import FPDF
 
+
 def generate_manual_1():
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font("Helvetica", size=12)
-    
+
     content = """Bicycle Maintenance Manual: Derailleurs and Gears
 
 1. Adjusting the Rear Derailleur
@@ -27,18 +28,21 @@ If your chain drops frequently, your limit screws are likely out of adjustment.
 Step 1: Put the chain back on the chainring manually.
 Step 2: Check the front derailleur alignment. It should be parallel to the chainrings with 1-3mm clearance.
 """
-    for line in content.split('\n'):
-        pdf.cell(200, 10, txt=line.encode('latin-1', 'replace').decode('latin-1'), ln=True)
-    
+    for line in content.split("\n"):
+        pdf.cell(
+            200, 10, txt=line.encode("latin-1", "replace").decode("latin-1"), ln=True
+        )
+
     os.makedirs("data", exist_ok=True)
     pdf.output("data/derailleur_manual.pdf")
     print("Generated data/derailleur_manual.pdf")
+
 
 def generate_manual_2():
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font("Helvetica", size=12)
-    
+
     content = """Bicycle Maintenance Manual: Tires and Brakes
 
 1. Fixing a Flat Tire
@@ -56,11 +60,14 @@ Step 2: Align the pad so it is flat against the rim braking surface.
 Step 3: Ensure it does not touch the tire, which can cause a blowout.
 Step 4: Tighten the bolt securely.
 """
-    for line in content.split('\n'):
-        pdf.cell(200, 10, txt=line.encode('latin-1', 'replace').decode('latin-1'), ln=True)
-    
+    for line in content.split("\n"):
+        pdf.cell(
+            200, 10, txt=line.encode("latin-1", "replace").decode("latin-1"), ln=True
+        )
+
     pdf.output("data/tires_brakes_manual.pdf")
     print("Generated data/tires_brakes_manual.pdf")
+
 
 if __name__ == "__main__":
     generate_manual_1()

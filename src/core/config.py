@@ -2,12 +2,13 @@ import os
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import SecretStr
 
+
 class Settings(BaseSettings):
     # Database Settings
     postgres_user: str = "unibike"
     postgres_password: str = "unibike_password"
     postgres_db: str = "unibike_db"
-    postgres_host: str = "localhost" # Default to localhost for outside-docker testing
+    postgres_host: str = "localhost"  # Default to localhost for outside-docker testing
     postgres_port: int = 5432
 
     # Gradio Settings
@@ -21,9 +22,7 @@ class Settings(BaseSettings):
     groq_api_key: str = ""
 
     model_config = SettingsConfigDict(
-        env_file=".env",
-        env_file_encoding="utf-8",
-        extra="ignore"
+        env_file=".env", env_file_encoding="utf-8", extra="ignore"
     )
 
     @property
@@ -32,5 +31,6 @@ class Settings(BaseSettings):
         if self.postgres_host == "localhost":
             return f"sqlite:///{os.path.join(self.data_dir, 'unibike.db')}"
         return f"postgresql://{self.postgres_user}:{self.postgres_password}@{self.postgres_host}:{self.postgres_port}/{self.postgres_db}"
+
 
 settings = Settings()

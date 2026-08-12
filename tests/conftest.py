@@ -11,6 +11,7 @@ engine = create_engine(
 )
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
+
 @pytest.fixture(scope="function")
 def db_session():
     # Create tables
@@ -23,11 +24,14 @@ def db_session():
         # Drop tables
         Base.metadata.drop_all(bind=engine)
 
+
 @pytest.fixture(scope="function")
 def override_get_db(db_session):
     def _override_get_db():
         yield db_session
+
     return _override_get_db
+
 
 # Mock settings for Chroma DB to use a temporary directory
 @pytest.fixture(autouse=True)

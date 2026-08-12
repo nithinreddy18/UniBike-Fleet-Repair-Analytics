@@ -9,11 +9,12 @@ from src.core.logger import logger
 
 _chain = None
 
+
 def get_rag_chain():
     global _chain
     if _chain is not None:
         return _chain
-        
+
     logger.info("Initializing generative RAG chain...")
     vector_store = get_vector_store()
     retriever = vector_store.as_retriever(search_kwargs={"k": 2})
@@ -24,8 +25,8 @@ def get_rag_chain():
 
     llm = ChatGroq(
         temperature=0,
-        model_name="llama-3.1-8b-instant", # Groq's stable Llama 3.1 8B model
-        api_key=settings.groq_api_key
+        model_name="llama-3.1-8b-instant",  # Groq's stable Llama 3.1 8B model
+        api_key=settings.groq_api_key,
     )
 
     template = """You are a helpful AI repair assistant for the UniBike fleet. 
@@ -45,10 +46,11 @@ Answer:"""
     _chain = create_retrieval_chain(retriever, combine_docs_chain)
     return _chain
 
+
 def query_assistant(question: str) -> tuple[str, list]:
     chain = get_rag_chain()
     start_time = time.time()
-    
+
     try:
         response = chain.invoke({"input": question})
         answer = response.get("answer", "I could not find an answer.")
@@ -57,8 +59,8 @@ def query_assistant(question: str) -> tuple[str, list]:
         logger.error(f"RAG Chain error: {e}")
         answer = "Sorry, I encountered an error while processing your request."
         docs = []
-        
+
     elapsed = time.time() - start_time
     logger.info(f"Generative RAG query executed in {elapsed:.2f} seconds.")
-    
+
     return answer, docs
