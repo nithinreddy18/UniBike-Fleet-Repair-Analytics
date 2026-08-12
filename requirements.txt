@@ -10,3 +10,4 @@ langchain-huggingface
 langchain-groq
 pypdf
 sentence-transformers
+schedule
