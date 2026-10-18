@@ -1,5 +1,15 @@
-const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-export const API_URL = baseUrl.endsWith('/api') ? baseUrl : `${baseUrl}/api`;
+const getBaseUrl = () => {
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+  if (typeof window !== 'undefined' && window.location.port !== '5173') {
+    return '';
+  }
+  return 'http://localhost:8000';
+};
+
+const rawBase = getBaseUrl();
+export const API_URL = rawBase ? (rawBase.endsWith('/api') ? rawBase : `${rawBase}/api`) : '/api';
 
 export const login = async (username: string, password: string) => {
   const response = await fetch(`${API_URL}/login`, {
@@ -34,14 +44,28 @@ export const submitTicket = async (payload: TicketPayload) => {
 };
 
 export const chatAssistant = async (message: string) => {
-  const response = await fetch(`${API_URL}/chat`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ message }),
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${API_URL}/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message }),
+    });
+  } catch (err: any) {
+    throw new Error(
+      'Unable to connect to the backend server. If using Render, the free instance may take ~50 seconds to wake from sleep. If running locally, please ensure the backend is started on port 8000.'
+    );
+  }
+
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.detail || 'Failed to communicate with assistant');
+    let detail = 'Failed to communicate with assistant';
+    try {
+      const error = await response.json();
+      detail = error.detail || detail;
+    } catch {
+      detail = `Server error (${response.status}: ${response.statusText})`;
+    }
+    throw new Error(detail);
   }
   return response.json();
 };

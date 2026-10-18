@@ -4,7 +4,7 @@ services:
   app:
     build: .
     ports:
-      - "7860:7860"
+      - "8000:8000"
     environment:
       - POSTGRES_USER=unibike
       - POSTGRES_PASSWORD=unibike_password
@@ -14,11 +14,12 @@ services:
       - GRADIO_ADMIN_USERNAME=admin
       - GRADIO_ADMIN_PASSWORD=password
       - CHROMA_DB_DIR=/app/data/chroma
+      - GROQ_API_KEY=${GROQ_API_KEY}
+      - GROQ_MODEL=${GROQ_MODEL:-qwen/qwen3.8-27b}
     depends_on:
       db:
         condition: service_healthy
     volumes:
-      - .:/app
       - chroma_data:/app/data/chroma
 
   db:

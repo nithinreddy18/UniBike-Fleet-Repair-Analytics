@@ -251,8 +251,9 @@ export function ChatAssistant() {
     try {
       const res = await chatAssistant(userMsg);
       setMessages(prev => [...prev, { role: 'assistant', content: res.answer, sources: res.sources }]);
-    } catch (err) {
-      setMessages(prev => [...prev, { role: 'assistant', content: "Sorry, I encountered an error. Please try again." }]);
+    } catch (err: any) {
+      const errorMessage = err?.message || "Sorry, I encountered an error. Please try again.";
+      setMessages(prev => [...prev, { role: 'assistant', content: errorMessage }]);
     } finally {
       setIsLoading(false);
     }
@@ -274,7 +275,7 @@ export function ChatAssistant() {
         {messages.map((m, i) => (
           <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
             <div className={`max-w-[80%] p-4 rounded-2xl ${m.role === 'user' ? 'bg-accent text-white rounded-br-sm' : 'bg-white shadow-sm border border-slate-100 rounded-bl-sm'}`}>
-              <p>{m.content}</p>
+              <p className="whitespace-pre-line leading-relaxed">{m.content}</p>
               {m.sources && m.sources.length > 0 && (
                 <div className="mt-3 pt-3 border-t border-slate-100 text-sm">
                   <p className="text-slate-500 font-semibold mb-1">Sources:</p>

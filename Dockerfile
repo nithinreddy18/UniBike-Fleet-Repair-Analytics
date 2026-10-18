@@ -1,50 +1,52 @@
-# Use multi-architecture base image for AMD64/ARM64 support
-FROM python:3.11-slim as builder
+# Multi-stage Dockerfile for UniBike Fleet & Repair Analytics
+# Stage 1: Build React frontend
+FROM node:18-alpine AS frontend-builder
+WORKDIR /app/frontend
+COPY frontend/package*.json ./
+RUN npm ci
+COPY frontend/ ./
+RUN npm run build
 
-# Set environment variables
+# Stage 2: Build Python dependencies
+FROM python:3.11-slim AS builder
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1
-
 WORKDIR /app
-
-# Install build dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     libpq-dev \
     && rm -rf /var/lib/apt/lists/*
-
 COPY requirements.txt .
 RUN pip wheel --no-cache-dir --no-deps --wheel-dir /app/wheels -r requirements.txt
 
-# Final stage
+# Stage 3: Final runtime
 FROM python:3.11-slim
-
 ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
+    PYTHONUNBUFFERED=1 \
+    PORT=8000
 
 WORKDIR /app
 
-# Install runtime dependencies for psycopg2 and others
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libpq-dev \
-    make \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy wheels from builder and install
 COPY --from=builder /app/wheels /wheels
 COPY --from=builder /app/requirements.txt .
 RUN pip install --no-cache /wheels/*
 
-# Copy application code
+# Copy backend application code
 COPY . .
 
-# Set PYTHONPATH so src modules can be imported
+# Copy built frontend assets from stage 1 into frontend/dist
+COPY --from=frontend-builder /app/frontend/dist /app/frontend/dist
+
 ENV PYTHONPATH=/app
 
-# Expose Gradio port
-EXPOSE 7860
+EXPOSE 8000
 
-# We will use a script to run migrations and then start the app
-CMD ["bash", "-c", "alembic upgrade head && python src/ui/app.py"]
+# Run migrations and start uvicorn
+CMD ["bash", "-c", "alembic upgrade head && uvicorn src.api.server:app --host 0.0.0.0 --port ${PORT:-8000}"]

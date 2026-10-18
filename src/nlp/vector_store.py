@@ -1,4 +1,13 @@
 import os
+
+# Suppress noisy chromadb telemetry signature issue in chromadb/posthog
+try:
+    import chromadb.telemetry.product.posthog as chromadb_posthog
+
+    chromadb_posthog.Posthog.capture = lambda *args, **kwargs: None
+except Exception:
+    pass
+
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
 from src.core.config import settings

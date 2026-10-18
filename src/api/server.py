@@ -16,7 +16,28 @@ from src.database.seeder import seed_db
 from src.scripts.generate_pdfs import generate_manual_1, generate_manual_2
 from src.nlp.vector_store import get_vector_store
 
-app = FastAPI(title="UniBike API")
+from contextlib import asynccontextmanager
+from datetime import datetime, timezone
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Run initialization in a background thread to prevent blocking Uvicorn startup
+    def init_data():
+        os.makedirs(settings.data_dir, exist_ok=True)
+        Base.metadata.create_all(bind=engine)
+        seed_db()
+        generate_manual_1()
+        generate_manual_2()
+        get_vector_store()
+
+    threading.Thread(target=init_data, daemon=True).start()
+    yield
+
+
+app = FastAPI(title="UniBike API", lifespan=lifespan)
 
 # CORS setup for the React frontend
 app.add_middleware(
@@ -34,20 +55,6 @@ def get_db():
         yield db
     finally:
         db.close()
-
-
-@app.on_event("startup")
-def on_startup():
-    # Run initialization in a background thread to prevent blocking Uvicorn startup
-    def init_data():
-        os.makedirs(settings.data_dir, exist_ok=True)
-        Base.metadata.create_all(bind=engine)
-        seed_db()
-        generate_manual_1()
-        generate_manual_2()
-        get_vector_store()
-
-    threading.Thread(target=init_data).start()
 
 
 # --- Ticketing API ---
@@ -149,7 +156,25 @@ def update_ticket(
 
     ticket.status = payload.status
     if payload.status == "Resolved":
-        ticket.resolved_at = pd.Timestamp.now(tz="UTC")
+        ticket.resolved_at = datetime.now(timezone.utc)
+        # Check if there are other active (Open or In Progress) tickets for this bike
+        other_active = (
+            db.query(WorkOrder)
+            .filter(
+                WorkOrder.bike_id == ticket.bike_id,
+                WorkOrder.id != ticket.id,
+                WorkOrder.status.in_(["Open", "In Progress"]),
+            )
+            .first()
+        )
+        if not other_active and ticket.bike:
+            ticket.bike.status = "Available"
+    elif payload.status == "In Progress":
+        if ticket.bike:
+            ticket.bike.status = "In Repair"
+    elif payload.status == "Open":
+        if ticket.bike:
+            ticket.bike.status = "Out of Order"
 
     db.commit()
     return {"message": "Status updated successfully", "status": ticket.status}
@@ -164,7 +189,7 @@ class ChatMessage(BaseModel):
 def chat(payload: ChatMessage):
     try:
         answer, docs = query_assistant(payload.message)
-        sources = [doc.page_content for doc in docs]
+        sources = [getattr(doc, "page_content", str(doc)) for doc in docs if doc]
         return {"answer": answer, "sources": sources}
     except Exception as e:  # noqa: BLE001
         raise HTTPException(status_code=500, detail=str(e))
@@ -234,3 +259,26 @@ def get_kpi_data(db: Session = Depends(get_db)):
         "status_distribution": status_distribution,
         "inventory": inventory_data,
     }
+
+
+# --- Static SPA Files (React Frontend) ---
+FRONTEND_DIST = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..", "..", "frontend", "dist")
+)
+
+if os.path.isdir(FRONTEND_DIST):
+    assets_dir = os.path.join(FRONTEND_DIST, "assets")
+    if os.path.isdir(assets_dir):
+        app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
+
+    @app.get("/{full_path:path}", include_in_schema=False)
+    def serve_spa(full_path: str):
+        if full_path.startswith("api"):
+            raise HTTPException(status_code=404, detail="Not Found")
+        file_path = os.path.join(FRONTEND_DIST, full_path)
+        if full_path and os.path.isfile(file_path):
+            return FileResponse(file_path)
+        index_file = os.path.join(FRONTEND_DIST, "index.html")
+        if os.path.isfile(index_file):
+            return FileResponse(index_file)
+        raise HTTPException(status_code=404, detail="Frontend index.html not found")

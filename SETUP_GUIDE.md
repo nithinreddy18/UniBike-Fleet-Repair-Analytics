@@ -57,22 +57,24 @@ The frontend is a React Single Page Application built with Vite.
    cd "UniBike Fleet & Repair Analytics/frontend"
    ```
 
-2. Install the Node modules:
+2. Install the Node modules and build:
    ```bash
    npm install
+   npm run build
    ```
 
-3. Start the Vite development server:
+3. (Optional for development) Start the Vite development server with hot-reload:
    ```bash
    npm run dev
    ```
-   *Leave this terminal window running.*
 
 ---
 
 ## 3️⃣ Run and Test the Application
 
-Open your web browser and navigate to **[http://localhost:5173](http://localhost:5173)**.
+You can access the application in two ways:
+- **Unified Full-Stack Deployment (Recommended):** Navigate to **[http://localhost:8000](http://localhost:8000)** (the backend server serves the production-built React frontend and API together).
+- **Vite Dev Server (Frontend Development):** Navigate to **[http://localhost:5173](http://localhost:5173)** with Vite proxying to port 8000.
 
 ### Testing the Features:
 1. **Report a Bike (Home Page):** Try filling out the form on the homepage to report a broken bike.

@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: unibike-fleet-repair-analytics
+    env: docker
+    dockerfilePath: Dockerfile
+    plan: free
+    region: frankfurt
+    envVars:
+      - key: PORT
+        value: 8000
+      - key: GROQ_API_KEY
+        sync: false
+      - key: GROQ_MODEL
+        value: qwen/qwen3.8-27b
+      - key: GRADIO_ADMIN_USERNAME
+        value: admin
+      - key: GRADIO_ADMIN_PASSWORD
+        value: password

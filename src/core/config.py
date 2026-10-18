@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     data_dir: str = "./data"
     # Groq API
     groq_api_key: str = ""
+    groq_model: str = "qwen/qwen3.8-27b"
 
     model_config = SettingsConfigDict(
         env_file=".env", env_file_encoding="utf-8", extra="ignore"

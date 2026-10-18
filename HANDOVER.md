@@ -6,8 +6,8 @@ Welcome to the **UniBike Fleet & Repair Analytics** open-source repository! This
 
 ### 1. Generating QR Codes
 To map physical bikes to the database, you need QR codes that point to the ticketing system.
-- Deploy this application to a public domain (e.g., `https://bikes.asta.tu-darmstadt.de`).
-- Generate QR codes containing the URL with the `bike_id` parameter. Unfortunately, Gradio Blocks does not easily read URL parameters dynamically on initialization without custom routing, so users may have to manually enter the `Bike ID` printed on the sticker, or you can host a small reverse proxy (like Nginx) that redirects `?bike_id=X` to a pre-filled endpoint.
+- Deploy this application to a public domain (e.g., `https://bikes.asta.tu-darmstadt.de` or your Docker container).
+- Generate QR codes containing the URL with the `bike_id` parameter (e.g. `https://bikes.asta.tu-darmstadt.de/?bike_id=42`). The React frontend automatically detects and pre-fills the Bike ID for the student!
 - Attach the physical QR codes/stickers prominently on the bike frames.
 
 ### 2. Updating PDF Manuals
