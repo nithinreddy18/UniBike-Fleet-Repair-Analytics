@@ -5,7 +5,7 @@ If you have just cloned or downloaded this repository, follow these instructions
 ## 📋 Prerequisites
 Ensure you have the following installed on your machine:
 - **Python (3.9 or higher)**
-- **Node.js (18 or higher) and npm**
+- **Node.js (20 or higher, 22 recommended) and npm**
 - A **Groq API Key** (You can get one for free at [console.groq.com](https://console.groq.com))
 
 ---
